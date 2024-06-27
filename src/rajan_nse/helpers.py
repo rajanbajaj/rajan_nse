@@ -121,7 +121,7 @@ def filterStocksBasedOnValueThreshold(session: Session, to_date_formated, from_d
     df = df.dropna()
 
     filtered_stock_symbols = df['secVal'].keys()
-    df['secVal'].to_csv('tmp/stocks' + to_date_formated + '.csv')
+    df['secVal'].to_csv('stocks_' + to_date_formated + '.tmp.csv')
     return filtered_stock_symbols
 
 def filterStocksBasedOnPromoterAndSast(session: Session, to_date_formated, from_date_formated):
