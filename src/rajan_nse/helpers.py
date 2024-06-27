@@ -3,7 +3,7 @@ from pandas import DataFrame, to_numeric
 from time import sleep
 from tqdm import tqdm
 from alive_progress import alive_bar
-from Session import Session
+from rajan_nse.Session import Session
 
 def isPromoterFilterPassed(session: Session, symbol):
     try:

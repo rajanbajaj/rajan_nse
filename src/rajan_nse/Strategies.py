@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from pandas import DataFrame
-from Session import Session
-from helpers import *
+from rajan_nse.Session import Session
+from rajan_nse.helpers import *
 
 class Strategies:
     def __init__(self):
