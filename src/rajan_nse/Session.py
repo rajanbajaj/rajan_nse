@@ -26,4 +26,5 @@ class Session:
             self.cookies = dict(r.cookies)
             return r.json()
         except Exception as e:
-            print(e)
+            # print(e)
+            return
