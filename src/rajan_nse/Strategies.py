@@ -37,6 +37,7 @@ class Strategies:
             if save_to_file:
                 DataFrame.to_csv(DataFrame(data), 'final-'+ to_date_formated +'.csv')
         except Exception as e:
-            print(e)
+            # print(e)
+            return
 
         return data
