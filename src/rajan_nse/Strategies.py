@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from pandas import DataFrame
 from rajan_nse.Session import Session
-from rajan_nse.helpers import *
+from helpers import *
 
 class Strategies:
     def __init__(self):
@@ -11,7 +11,7 @@ class Strategies:
     This function returns the list of insder trading data withing given delta (days)
     """
     def insderTradingData(self, symbol, delta = 90):
-        df = getInsiderTradingData(self.session, symbol, delta)
+        df = getInsiderTradingDataWithSymbol(self.session, symbol, delta)
         return df
 
 
