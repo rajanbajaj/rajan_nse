@@ -1,10 +1,12 @@
 from Strategies import Strategies
 from pandas import DataFrame
 from rajan_nse.CandleStickPatterns import CandleStickPatterns
+
 if __name__ == "__main__":
     # strategies = Strategies()
 
-    # data = strategies.promoterBuyBackStocks()
+    # data = strategies.promoterBuyBackStocks(300)
+    # print(data)
     # DataFrame.to_csv(DataFrame(data), 'final.csv')
     
     
@@ -16,6 +18,10 @@ if __name__ == "__main__":
     # result = candleStickPatterns.hammerPattern('BRITANNIA')
     # print(result)
 
+    # candleStickPatterns = CandleStickPatterns()
+    # result = candleStickPatterns.bullishEngullfingPattern('BIGBLOC')
+    # print(result)
+
     candleStickPatterns = CandleStickPatterns()
-    result = candleStickPatterns.bullishEngullfingPattern('BIGBLOC')
+    result = candleStickPatterns.dojiPattern('ASIANPAINT', False)
     print(result)

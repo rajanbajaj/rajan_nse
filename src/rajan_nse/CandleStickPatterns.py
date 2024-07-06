@@ -78,6 +78,29 @@ class CandleStickPatterns:
         
         return rsi
         
+    def dojiPattern(self, symbol, live=True):
+
+        if live:
+            current_data = self.getCurrentData(symbol)
+
+            day_open = current_data['priceInfo']['open']
+            day_close = current_data['priceInfo']['lastPrice']
+            
+            # parity of 0.05 adjusted in day closing and lastPrice
+            condition1 = day_open / day_close >= 0.995
+            condition2 = day_open / day_close <= 1.005
+        else:
+            data = self.getHistoricalData(symbol)
+            day_open = data['data'][0]['CH_OPENING_PRICE']
+            day_close = data['data'][0]['CH_CLOSING_PRICE']
+            condition1 = day_open / day_close >= 0.9995
+            condition2 = day_open / day_close <= 1.0005
+        
+        return (
+            condition1 and 
+            condition2
+        )
+
     def hammerPattern(self, symbol, live=True):
         data = self.getHistoricalData(symbol)
 
