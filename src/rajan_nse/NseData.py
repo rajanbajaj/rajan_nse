@@ -36,5 +36,5 @@ class NseData:
             }
         )
 
-        #data['data'] = [{CH_TRADE_HIGH_PRICE, CH_TRADE_LOW_PRICE, CH_OPENING_PRICE, CH_CLOSING_PRICE, CH_TRADE_HIGH_PRICE}, {}, ...] 
+        #data['data'] = [{CH_TRADE_HIGH_PRICE, CH_TRADE_LOW_PRICE, CH_OPENING_PRICE, CH_CLOSING_PRICE, CH_TOT_TRADED_QTY}, {}, ...] 
         return data
