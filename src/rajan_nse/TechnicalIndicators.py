@@ -62,7 +62,6 @@ class TechnicalIndicators:
         sum_a = 0
         sum_b = 0
         data_length = len(data)
-        print(data_length, period)
         if (period < data_length):
             for i in range(0, period):
                 sum_a += (((data[i]['CH_CLOSING_PRICE'] - data[i]['CH_TRADE_LOW_PRICE'] ) - (data[i]['CH_TRADE_HIGH_PRICE']  - data[i]['CH_CLOSING_PRICE'] )) / (data[i]['CH_TRADE_HIGH_PRICE']  - data[i]['CH_TRADE_LOW_PRICE'] )) * data[i]['CH_TOT_TRADED_QTY']
