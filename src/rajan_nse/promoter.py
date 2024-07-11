@@ -30,11 +30,11 @@ if __name__ == "__main__":
     # print(result)
 
     technicalIndicators = TechnicalIndicators()
-    nseData = NseData()
 
-    data = nseData.getHistoricalData('RELIANCE', delta=14)
-    print(technicalIndicators.sma(data['data']))
-    data = nseData.getHistoricalData('RELIANCE')
-    print(technicalIndicators.sma(data['data'], 14))
-    print(technicalIndicators.rsi(data['data']))
+    print(technicalIndicators.sma('RELIANCE'))
+    print(technicalIndicators.sma('RELIANCE', 14))
+    print(technicalIndicators.rsi('RELIANCE'))
+    print(technicalIndicators.cmf('RELIANCE'))
+    print(technicalIndicators.near52WeekHigh('RELIANCE'))
+    print(technicalIndicators.near52WeekLow('RELIANCE'))
 

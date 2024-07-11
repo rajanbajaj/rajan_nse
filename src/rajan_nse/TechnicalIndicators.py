@@ -1,7 +1,18 @@
 import numpy as np
+from datetime import date, timedelta
+from rajan_nse.NseData import NseData
+from rajan_nse.Session import Session
 
 class TechnicalIndicators:
-    def sma(self, data, period=200):
+    def __init__(self) -> None:
+        self.session = Session("https://www.nseindia.com")
+        self.nseData = NseData()
+        pass
+
+    def sma(self, symbol=None, period=200, data=None):
+        if data is None:
+            data = self.nseData.getHistoricalData(symbol)['data']
+
         try:
             sum = 0
             data_length = len(data)
@@ -16,7 +27,9 @@ class TechnicalIndicators:
         except:
             return -1
 
-    def rsi(self, data, period = 14):
+    def rsi(self, symbol, period = 14):
+        data = self.nseData.getHistoricalData(symbol)['data']
+
         assert len(data) >= 14, "Insufficient data: Need at least 14 rows"
 
         prices = [day['CH_CLOSING_PRICE'] for day in data[:14]]
@@ -29,8 +42,8 @@ class TechnicalIndicators:
         losses = np.abs(np.minimum(price_changes, 0))
         
         # # Calculate the average gains and losses
-        avg_gain = self.sma(gains, period)
-        avg_loss = self.sma(losses, period)
+        avg_gain = self.sma(data=gains, period=period)
+        avg_loss = self.sma(data=losses, period=period)
         
         # # Calculate the Relative Strength (RS)
         rs = avg_gain / avg_loss
@@ -58,7 +71,9 @@ class TechnicalIndicators:
     CMF = n-day Sum of [(((C - L) - (H - C)) / (H - L)) x Vol] / n-day Sum of Vol
     Where: n = number of periods, typically 21 H = high L = low C = close Vol = volume
     """
-    def cmf(self, data, period = 21):
+    def cmf(self, symbol, period = 21):
+        data = self.nseData.getHistoricalData(symbol)['data']
+
         sum_a = 0
         sum_b = 0
         data_length = len(data)
@@ -71,3 +86,15 @@ class TechnicalIndicators:
                 sum_a += (((tmp['CH_CLOSING_PRICE'] - tmp['CH_TRADE_LOW_PRICE'] ) - (tmp['CH_TRADE_HIGH_PRICE']  - tmp['CH_CLOSING_PRICE'] )) / (tmp['CH_TRADE_HIGH_PRICE']  - tmp['CH_TRADE_LOW_PRICE'] )) * tmp['CH_TOT_TRADED_QTY'] 
                 sum_b += tmp['CH_TOT_TRADED_QTY']
         return sum_a / sum_b
+
+    # delta is percentage range of price from 52 weeks high
+    def near52WeekHigh(self, symbol, live=False, delta=5):
+        # data = {high:, low:, price:}
+        data = self.nseData.fiftyTwoWeekHighLow(symbol, live)
+        return (abs(data['high'] - data['price']) / data['high']) * 100 <= delta
+    
+    # delta is percentage range of price from 52 weeks low
+    def near52WeekLow(self, symbol, live=False, delta=5):
+        # data = {high:, low:, price:}
+        data = self.nseData.fiftyTwoWeekHighLow(symbol, live)
+        return (abs(data['low'] - data['price']) / data['low']) * 100 <= delta

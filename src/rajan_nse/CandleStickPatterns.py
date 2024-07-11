@@ -1,6 +1,4 @@
 from rajan_nse.Session import Session
-from datetime import date, timedelta
-import numpy as np
 from rajan_nse.TechnicalIndicators import TechnicalIndicators
 from rajan_nse.NseData import NseData
 
@@ -61,8 +59,8 @@ class CandleStickPatterns:
         condition7 = (day_high - day_open) <= (day_high - day_low) * 0.4
         condition8 = day_close > 10
         condition9 = day_high <= prev_day_high
-        condition10 = day_close >= self.technicalIndicators.sma(data['data'])
-        condition11 = self.technicalIndicators.rsi(data['data'], 14) > 30
+        condition10 = day_close >= self.technicalIndicators.sma(symbol)
+        condition11 = self.technicalIndicators.rsi(symbol, 14) > 30
 
         return (
             condition1 and 
