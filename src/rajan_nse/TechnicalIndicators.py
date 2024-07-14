@@ -1,12 +1,16 @@
 import numpy as np
-from datetime import date, timedelta
+import pandas as pd
+from datetime import date
 from rajan_nse.NseData import NseData
 from rajan_nse.Session import Session
+from rajan_nse.Visualization import Visualization
+from sklearn.linear_model import LinearRegression
 
 class TechnicalIndicators:
     def __init__(self) -> None:
         self.session = Session("https://www.nseindia.com")
         self.nseData = NseData()
+        self.visualize = Visualization()
         pass
 
     def sma(self, symbol=None, period=200, data=None):
@@ -98,3 +102,41 @@ class TechnicalIndicators:
         # data = {high:, low:, price:}
         data = self.nseData.fiftyTwoWeekHighLow(symbol, live)
         return (abs(data['low'] - data['price']) / data['low']) * 100 <= delta
+
+    def trendLine(self, symbol, delta=200, lower_percentile=40, upper_percentile=98, to_date = date.today()):
+        df = pd.DataFrame(self.nseData.getHistoricalData(symbol, delta, to_date)['data'])
+        df['CH_TIMESTAMP'] = pd.to_datetime(df['CH_TIMESTAMP'])
+        df.set_index('CH_TIMESTAMP', inplace=True)
+        df.sort_index(inplace=True)
+
+        lower_bound = np.percentile(df['CH_TOT_TRADED_QTY'], lower_percentile)
+        upper_bound = np.percentile(df['CH_TOT_TRADED_QTY'], upper_percentile)
+
+        # Select data points outside the lower and upper bounds
+        df = df[(df['CH_TOT_TRADED_QTY'] > lower_bound) & (df['CH_TOT_TRADED_QTY'] < upper_bound)]
+
+        df['CH_TRADE_HIGH_PRICE_MAX'] = df['CH_TRADE_HIGH_PRICE'][(df['CH_TRADE_HIGH_PRICE'] == df['CH_TRADE_HIGH_PRICE'].rolling(window=1, center=True).max())]
+        df['CH_TRADE_LOW_PRICE_MIN'] = df['CH_TRADE_LOW_PRICE'][(df['CH_TRADE_LOW_PRICE'] == df['CH_TRADE_LOW_PRICE'].rolling(window=1, center=True).min())]
+
+        peaks = df.dropna(subset=['CH_TRADE_HIGH_PRICE_MAX'])
+        troughs = df.dropna(subset=['CH_TRADE_LOW_PRICE_MIN'])
+        
+        # Upper trend line (peaks)
+        X_peaks = np.array((peaks.index - peaks.index[0]).days).reshape(-1, 1)
+        y_peaks = peaks['CH_TRADE_HIGH_PRICE_MAX'].values
+        model_peaks = LinearRegression().fit(X_peaks, y_peaks)
+        slope_peaks = model_peaks.coef_[0]
+        intercept_peaks = model_peaks.intercept_
+
+        # Lower trend line (troughs)
+        X_troughs = np.array((troughs.index - troughs.index[0]).days).reshape(-1, 1)
+        y_troughs = troughs['CH_TRADE_LOW_PRICE_MIN'].values
+        model_troughs = LinearRegression().fit(X_troughs, y_troughs)
+        slope_troughs = model_troughs.coef_[0]
+        intercept_troughs = model_troughs.intercept_
+
+        # Generate trend lines
+        df['UPPER_TREND_LINE'] = intercept_peaks + slope_peaks * np.array((df.index - df.index[0]).days)
+        df['LOWER_TREND_LINE'] = intercept_troughs + slope_troughs * np.array((df.index - df.index[0]).days)
+
+        return df
