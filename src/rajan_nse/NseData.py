@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from rajan_nse.Session import Session
 
 class NseData:
@@ -35,6 +35,35 @@ class NseData:
                 'to': to_date_formated,
             }
         )
+        
+        try:
+            for i in range(0, 3):
+                last_date = data['data'][-1]['CH_TIMESTAMP']
+                        # Convert to datetime object
+                to_date = datetime.strptime(last_date, '%Y-%m-%d')
+
+                # Convert datetime object to DD-MM-YY format string
+                to_date_formated = to_date.strftime('%d-%m-%Y')
+                from_date = to_date - timedelta(days=delta)
+                from_date_formated = from_date.strftime("%d-%m-%Y")
+
+                try:
+                    tmp = self.session.makeRequest(
+                        url = "https://www.nseindia.com/api/historical/cm/equity",
+                        params = {
+                            'symbol': symbol,
+                            'from': from_date_formated,
+                            'to': to_date_formated,
+                        }
+                    )
+                    data['data'].extend(tmp['data'])
+                except Exception as e:
+                    print(e)
+                    break
+        except Exception as e:
+                print(e)
+
+        data['data'] = data['data'][:delta]
 
         #data['data'] = [{CH_TRADE_HIGH_PRICE, CH_TRADE_LOW_PRICE, CH_OPENING_PRICE, CH_CLOSING_PRICE, CH_TOT_TRADED_QTY}, {}, ...] 
         return data
