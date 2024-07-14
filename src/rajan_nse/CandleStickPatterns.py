@@ -1,3 +1,4 @@
+import numpy as np
 from rajan_nse.Session import Session
 from rajan_nse.TechnicalIndicators import TechnicalIndicators
 from rajan_nse.NseData import NseData
@@ -124,3 +125,29 @@ class CandleStickPatterns:
             condition4 and
             condition5
         )
+    
+    def wedgePattern(self, symbol, period = 200):
+        # Calculate the slope of the upper trend line
+        df = self.technicalIndicators.trendLine(symbol, period)
+        x_values = np.arange(len(df))
+        upper_trend_line = df['UPPER_TREND_LINE'].values
+        lower_trend_line = df['LOWER_TREND_LINE'].values
+
+        # Use np.polyfit to find the slope (coefficient) of the linear fit
+        slope_peaks, intercept_peaks = np.polyfit(x_values, upper_trend_line, 1)
+        slope_troughs, intercept_troughs = np.polyfit(x_values, lower_trend_line, 1)
+        
+        # Determine if it is a Falling Wedge or Rising Wedge
+        if slope_peaks < 0 and slope_troughs < 0:
+            if abs(slope_peaks) > abs(slope_troughs):
+                pattern = "FW"
+            else:
+                pattern = "Uncertain - both lines slope downward but upper line is not steeper than lower line"
+        elif slope_peaks > 0 and slope_troughs > 0:
+            if abs(slope_troughs) > abs(slope_peaks):
+                pattern = "RW"
+            else:
+                pattern = "Uncertain - both lines slope upward but lower line is not steeper than upper line"
+        else:
+            pattern = "No clear wedge pattern"
+        return pattern
