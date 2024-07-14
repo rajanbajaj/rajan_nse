@@ -29,12 +29,17 @@ if __name__ == "__main__":
     # result = candleStickPatterns.dojiPattern('ASIANPAINT', False)
     # print(result)
 
-    technicalIndicators = TechnicalIndicators()
+    # technicalIndicators = TechnicalIndicators()
 
-    print(technicalIndicators.sma('RELIANCE'))
-    print(technicalIndicators.sma('RELIANCE', 14))
-    print(technicalIndicators.rsi('RELIANCE'))
-    print(technicalIndicators.cmf('RELIANCE'))
-    print(technicalIndicators.near52WeekHigh('RELIANCE'))
-    print(technicalIndicators.near52WeekLow('RELIANCE'))
+    # print(technicalIndicators.sma('RELIANCE'))
+    # print(technicalIndicators.sma('RELIANCE', 14))
+    # print(technicalIndicators.rsi('RELIANCE'))
+    # print(technicalIndicators.cmf('RELIANCE'))
+    # print(technicalIndicators.near52WeekHigh('RELIANCE'))
+    # print(technicalIndicators.near52WeekLow('RELIANCE'))
 
+    # technicalIndicators = TechnicalIndicators()
+    # print(technicalIndicators.trendLine('RELIANCE').head())
+
+    candleStickPatterns = CandleStickPatterns()
+    print(candleStickPatterns.wedgePattern('BAJAJ-AUTO', 50))
