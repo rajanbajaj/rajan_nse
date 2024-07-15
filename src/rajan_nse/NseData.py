@@ -6,6 +6,24 @@ class NseData:
         self.session = Session("https://www.nseindia.com")
         pass
 
+    def getInsiderTradingDataWithSymbol(self, symbol, delta = 90):
+        to_date = date.today()
+        from_date = to_date - timedelta(days=delta)
+        to_date_formated = to_date.strftime("%d-%m-%Y")
+        from_date_formated = from_date.strftime("%d-%m-%Y")
+
+        data = self.session.makeRequest(
+            url="https://www.nseindia.com/api/corporates-pit",
+            params= {
+                'index': 'equities',
+                'from_date': from_date_formated,
+                'to_date': to_date_formated,
+                'symbol': symbol
+            }
+        )
+
+        return data['data']
+
     def getCurrentData(self, symbol):
         # https://www.nseindia.com/api/quote-equity?symbol=X
         data = self.session.makeRequest(
