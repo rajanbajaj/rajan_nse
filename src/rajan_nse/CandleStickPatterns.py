@@ -126,6 +126,12 @@ class CandleStickPatterns:
             condition5
         )
     
+    def fallingWedgePattern(self, symbol, period = 200):
+        return self.wedgePattern(symbol, period) == 'FW'
+    
+    def risingWedgePattern(self, symbol, period = 200):
+        return self.wedgePattern(symbol, period) == 'FW'
+
     def wedgePattern(self, symbol, period = 200):
         # Calculate the slope of the upper trend line
         df = self.technicalIndicators.trendLine(symbol, period)
