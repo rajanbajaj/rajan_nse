@@ -5,15 +5,16 @@ The rajan_nse package is a comprehensive toolkit designed for analyzing and visu
 """
 
 # Import specific functions or classes for easy access
+from .CandleStickPatterns import CandleStickPatterns
 from .NseData import NseData
 from .Session import Session
 from .Strategies import Strategies
 from .TechnicalIndicators import TechnicalIndicators
 from .Visualization import Visualization
 
-
 # Define what should be accessible when 'from rajan_nse import *' is used
 __all__ = [
+    "CandleStickPatterns",
     'NseData', 
     'Session', 
     'Strategies', 
