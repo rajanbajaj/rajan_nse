@@ -6,15 +6,6 @@ from rajan_nse.helpers import *
 class Strategies:
     def __init__(self):
         self.session = Session("https://www.nseindia.com")
-
-    """
-    This function returns the list of insder trading data withing given delta (days)
-    """
-    def insderTradingData(self, symbol, delta = 90):
-        df = getInsiderTradingDataWithSymbol(self.session, symbol, delta)
-        return df
-
-
         
     """
     This function will return the list of stocks which are
