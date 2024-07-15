@@ -10,7 +10,7 @@ class CandleStickPatterns:
         self.nseData = NseData()
         pass
 
-    def dojiPattern(self, symbol, live=True):
+    def dojiPattern(self, symbol, live=True, delta = 200):
 
         if live:
             current_data = self.nseData.getCurrentData(symbol)
@@ -33,7 +33,7 @@ class CandleStickPatterns:
             condition2
         )
 
-    def hammerPattern(self, symbol, live=True):
+    def hammerPattern(self, symbol, live=True, delta = 200):
         data = self.nseData.getHistoricalData(symbol)
 
         if live:
@@ -83,7 +83,7 @@ class CandleStickPatterns:
             condition11
         )
 
-    def bullishEngullfingPattern(self, symbol, live=True):
+    def bullishEngullfingPattern(self, symbol, live=True, delta = 200):
         data = self.nseData.getHistoricalData(symbol)
 
         if live:
@@ -126,13 +126,13 @@ class CandleStickPatterns:
             condition5
         )
     
-    def fallingWedgePattern(self, symbol, period = 200):
-        return self.wedgePattern(symbol, period) == 'FW'
+    def fallingWedgePattern(self, symbol, live=False, period = 200):
+        return self.wedgePattern(symbol, live, period) == 'FW'
     
-    def risingWedgePattern(self, symbol, period = 200):
-        return self.wedgePattern(symbol, period) == 'FW'
+    def risingWedgePattern(self, symbol, live=False, period = 200):
+        return self.wedgePattern(symbol, live, period) == 'RW'
 
-    def wedgePattern(self, symbol, period = 200):
+    def wedgePattern(self, symbol, live=False, period = 200):
         # Calculate the slope of the upper trend line
         df = self.technicalIndicators.trendLine(symbol, period)
         x_values = np.arange(len(df))
