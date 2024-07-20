@@ -16,7 +16,7 @@ class Session:
         session = requests.Session()
         request = self.makeRequest(self.base_url)
 
-    def makeRequest(self, url, params=None):
+    def makeRequest(self, url, params=None, responseType='json'):
         try:
             if params == None:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies)
@@ -24,7 +24,11 @@ class Session:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, params=params)
             
             self.cookies = dict(r.cookies)
-            return r.json()
+
+            if responseType == 'json':
+                return r.json()
+            else:
+                return r
         except Exception as e:
             # print(e)
             return
