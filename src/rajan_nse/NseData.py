@@ -3,6 +3,7 @@ from rajan_nse.Session import Session
 
 class NseData:
     def __init__(self) -> None:
+        """This class is used to fetch data from NSE India wesite."""
         self.session = Session("https://www.nseindia.com")
         pass
 
