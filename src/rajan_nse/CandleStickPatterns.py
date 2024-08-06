@@ -5,13 +5,20 @@ from rajan_nse.NseData import NseData
 
 class CandleStickPatterns:
     def __init__(self) -> None:
+        """This class is used to identify candlestick patterns."""
         self.session = Session("https://www.nseindia.com")
         self.technicalIndicators = TechnicalIndicators()
         self.nseData = NseData()
         pass
 
     def dojiPattern(self, symbol, live=True, delta = 200):
-
+        """This function is used to identify doji pattern in the given stock symbol and returns a boolean.
+        
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         if live:
             current_data = self.nseData.getCurrentData(symbol)
 
@@ -34,6 +41,13 @@ class CandleStickPatterns:
         )
 
     def hammerPattern(self, symbol, live=True, delta = 200):
+        """This function is used to identify hammer pattern in the given stock symbol and returns a boolean.
+
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         data = self.nseData.getHistoricalData(symbol)
 
         if live:
@@ -84,6 +98,13 @@ class CandleStickPatterns:
         )
 
     def bullishEngullfingPattern(self, symbol, live=True, delta = 200):
+        """This function is used to identify bullish engullfing pattern in the given stock symbol and returns a boolean.
+
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         data = self.nseData.getHistoricalData(symbol)
 
         if live:
@@ -127,12 +148,33 @@ class CandleStickPatterns:
         )
     
     def fallingWedgePattern(self, symbol, live=False, period = 200):
+        """This function is used to identify falling wedge pattern in the given stock symbol and returns a boolean.
+
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         return self.wedgePattern(symbol, live, period) == 'FW'
     
     def risingWedgePattern(self, symbol, live=False, period = 200):
+        """This function is used to identify rising wedge pattern in the given stock symbol and returns a boolean.
+
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         return self.wedgePattern(symbol, live, period) == 'RW'
 
     def wedgePattern(self, symbol, live=False, period = 200):
+        """This function is used to identify wedge pattern in the given stock symbol and returns a string indicating the type.
+        
+        Keywork arguments:
+        symbol -- The stock symbol for which the doji pattern is to be identified.
+        live -- A boolean value indicating whether the data is to be fetched from live market or historical data.
+        delta -- The time delta in days for which the data is to be fetched.
+        """
         # Calculate the slope of the upper trend line
         df = self.technicalIndicators.trendLine(symbol, period)
         x_values = np.arange(len(df))
