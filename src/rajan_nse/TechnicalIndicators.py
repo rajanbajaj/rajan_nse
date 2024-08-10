@@ -8,12 +8,24 @@ from sklearn.linear_model import LinearRegression
 
 class TechnicalIndicators:
     def __init__(self) -> None:
+        """This class contains methods to calculate values of stocks technical indicators."""
         self.session = Session("https://www.nseindia.com")
         self.nseData = NseData()
         self.visualize = Visualization()
         pass
 
     def sma(self, symbol=None, period=200, data=None):
+        """This method is used to calculate simple moving average of stocks based on daily timeframe.
+
+        Keyword arguments:
+        symbol -- Stock symbol listed on NSE
+        period -- The period for which SMA should be calculated (default = 200)
+        data -- Historical data of a stock (default = None i.e. historical value will be fetched)
+
+        Returns:
+        integer value of calculated SMA
+        -1 if there is an error in calculation
+        """
         if data is None:
             data = self.nseData.getHistoricalData(symbol)['data']
 
@@ -32,6 +44,15 @@ class TechnicalIndicators:
             return -1
 
     def rsi(self, symbol, period = 14):
+        """This method is used to calculate relative strength index (rsi) of stocks based on daily timeframe.
+
+        Keyword arguments:
+        symbol -- Stock symbol listed on NSE
+        period -- The period for which SMA should be calculated (default = 14)
+
+        Returns:
+        integer value of calculated RSI
+        """
         data = self.nseData.getHistoricalData(symbol)['data']
 
         assert len(data) >= 14, "Insufficient data: Need at least 14 rows"
@@ -61,21 +82,25 @@ class TechnicalIndicators:
         
         return rsi
     
-    """
-    Chaikin Money Flow (CMF) developed by Marc Chaikin is a volume-weighted
-    average of accumulation and distribution over a specified period. The standard
-    CMF period is 21 days. The principle behind the Chaikin Money Flow is the nearer
-    the closing price is to the high, the more accumulation has taken place.
-    Conversely, the nearer the closing price is to the low, the more distribution
-    has taken place. If the price action consistently closes above the bar's midpoint
-    on increasing volume, the Chaikin Money Flow will be positive. Conversely, if the
-    price action consistently closes below the bar's midpoint on increasing volume, the
-    Chaikin Money Flow will be a negative value.
-    Calculations:
-    CMF = n-day Sum of [(((C - L) - (H - C)) / (H - L)) x Vol] / n-day Sum of Vol
-    Where: n = number of periods, typically 21 H = high L = low C = close Vol = volume
-    """
     def cmf(self, symbol, period = 21):
+        """
+        Chaikin Money Flow (CMF) developed by Marc Chaikin is a volume-weighted
+        average of accumulation and distribution over a specified period. The standard
+        CMF period is 21 days. The principle behind the Chaikin Money Flow is the nearer
+        the closing price is to the high, the more accumulation has taken place.
+        Conversely, the nearer the closing price is to the low, the more distribution
+        has taken place. If the price action consistently closes above the bar's midpoint
+        on increasing volume, the Chaikin Money Flow will be positive. Conversely, if the
+        price action consistently closes below the bar's midpoint on increasing volume, the
+        Chaikin Money Flow will be a negative value.
+        Calculations:
+        CMF = n-day Sum of [(((C - L) - (H - C)) / (H - L)) x Vol] / n-day Sum of Vol
+        Where: n = number of periods, typically 21 H = high L = low C = close Vol = volume
+
+        Keyword Arguments:
+        symbol -- Stock symbol listed on NSE
+        period -- The period for which SMA should be calculated (default = 21)
+        """
         data = self.nseData.getHistoricalData(symbol)['data']
 
         sum_a = 0
@@ -93,17 +118,43 @@ class TechnicalIndicators:
 
     # delta is percentage range of price from 52 weeks high
     def near52WeekHigh(self, symbol, live=False, delta=5):
+        """This method is used to return a boolean if the stock is near 52 Week high value for a NSE stock.
+
+        Keyword arguments:
+        symbol -- Stock symbol listed on NSE website
+        live -- Boolean to get current running price value or previous day value
+        delta -- The delta as percentage to check if stock is in +- that range of high(default = 5 percentage)
+        """
         # data = {high:, low:, price:}
         data = self.nseData.fiftyTwoWeekHighLow(symbol, live)
         return (abs(data['high'] - data['price']) / data['high']) * 100 <= delta
     
     # delta is percentage range of price from 52 weeks low
     def near52WeekLow(self, symbol, live=False, delta=5):
+        """This method is used to return a boolean if the stock is near 52 Week low value for a NSE stock.
+
+        Keyword arguments:
+        symbol -- Stock symbol listed on NSE website
+        live -- Boolean to get current running price value or previous day value
+        delta -- The delta as percentage to check if stock is in +- that range of low(default = 5 percentage)
+        """
         # data = {high:, low:, price:}
         data = self.nseData.fiftyTwoWeekHighLow(symbol, live)
         return (abs(data['low'] - data['price']) / data['low']) * 100 <= delta
 
     def trendLine(self, symbol, delta=200, lower_percentile=40, upper_percentile=98, to_date = date.today()):
+         """This method returns the series of price values that creates a trend line both upper and lower.
+
+        Keyword arguments:
+        symbol -- Stock symbol listed on NSE website
+        delta -- Check trend for these number of historical days
+        low_percentile -- Percentile value above which the traded qty. (volume) should be (default value = 40)
+        upper_percentile -- Percentile value below which the traded qty. (volume) should be (default value = 98)
+        to_date -- date till which the trend line should be
+
+        Returns:
+        returns a dataframe for lower trendline and upper trendline values list
+        """
         df = pd.DataFrame(self.nseData.getHistoricalData(symbol, delta, to_date)['data'])
         df['CH_TIMESTAMP'] = pd.to_datetime(df['CH_TIMESTAMP'])
         df.set_index('CH_TIMESTAMP', inplace=True)
