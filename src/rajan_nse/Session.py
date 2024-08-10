@@ -8,15 +8,28 @@ class Session:
     cookies = {}
 
     def __init__(self, base_url):
+        """This class is used to set new browser session for requested url.
+
+        Keyword arguments:
+        base_url -- The base url of the website.
+        """
         self.session = requests.Session()
         self.base_url = base_url
         self.createNewSession()
     
     def createNewSession(self):
+        """This method is used to create a new browser session for the requested url."""
         session = requests.Session()
         request = self.makeRequest(self.base_url)
 
-    def makeRequest(self, url, params=None):
+    def makeRequest(self, url, params=None, responseType='json'):
+        """This method is used to make a request to the url and set response cookies
+        
+        Keywork arguments:
+        url -- The url to make the request to.
+        params -- The parameters to be passed in the url.
+        responseType -- json|text
+        """
         try:
             if params == None:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies)
@@ -24,7 +37,11 @@ class Session:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, params=params)
             
             self.cookies = dict(r.cookies)
-            return r.json()
+
+            if responseType == 'json':
+                return r.json()
+            else:
+                return r
         except Exception as e:
             # print(e)
             return
