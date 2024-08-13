@@ -1,5 +1,8 @@
 from datetime import date, timedelta, datetime
 from rajan_nse.Session import Session
+from bs4 import BeautifulSoup
+import json
+import re
 
 class NseData:
     def __init__(self) -> None:
@@ -72,7 +75,7 @@ class NseData:
 
     def getCurrentData(self, symbol):
         """Get current market data for the symbol and return the json response
-        
+
         Keyword arguments:
         symbol -- the symbol of the stock
 
@@ -250,7 +253,7 @@ class NseData:
         delta -- the number of days to get data for (default 200)
         to_date -- the date to get data up to (default today)
         depth -- the number of loop count to get data for (default 3, i.e 3*200 count)
-        
+
         Request url: https://www.nseindia.com/api/historical/cm/equity?symbol=SYMBOL&series=["EQ"]&from=FROM&to=TO
         """
         from_date = to_date - timedelta(days=delta)
@@ -266,7 +269,7 @@ class NseData:
                 'to': to_date_formated,
             }
         )
-        
+
         try:
             for i in range(0, depth):
                 last_date = data['data'][-1]['CH_TIMESTAMP']
@@ -296,9 +299,9 @@ class NseData:
 
         data['data'] = data['data'][:delta]
 
-        #data['data'] = [{CH_TRADE_HIGH_PRICE, CH_TRADE_LOW_PRICE, CH_OPENING_PRICE, CH_CLOSING_PRICE, CH_TOT_TRADED_QTY}, {}, ...] 
+        #data['data'] = [{CH_TRADE_HIGH_PRICE, CH_TRADE_LOW_PRICE, CH_OPENING_PRICE, CH_CLOSING_PRICE, CH_TOT_TRADED_QTY}, {}, ...]
         return data
-    
+
     def fiftyTwoWeekHighLow(self, symbol, live=True):
         """
         Get 52 Weeks High and Low values for given symbol
@@ -311,7 +314,8 @@ class NseData:
         {
             'high': 100,
             'low': 15,
-            'price': 55
+
+           'price': 55
         }
         """
         current_data = self.getCurrentData(symbol)
@@ -329,3 +333,51 @@ class NseData:
                 'low': current_data['priceInfo']['weekHighLow']['min'],
                 'price': historical_data['data'][0]['CH_CLOSING_PRICE']
             }
+
+    def getOISpurtsData(self):
+        """Get OI spurts data"""
+        data = self.session.makeRequest(
+            url = "https://www.nseindia.com/api/live-analysis-oi-spurts-underlyings"
+        )
+
+        return data;
+
+    def getTopGainersLosers(self):
+        """
+        Get indexDataInfo data with following structure
+        response structure:
+        {
+            'advance': {},
+            'topGainers': {},
+            'topLosers': {},
+            'topVolume': {},
+            'topValue': {}
+        }
+        """
+        data = self.session.makeRequest(
+            url = "https://www.nseindia.com/",
+            responseType = "text"
+        )
+        #print(data)
+        # Parse the HTML content with BeautifulSoup
+        soup = BeautifulSoup(data, 'html.parser')
+
+        # Find the script tag containing the specific text
+        script_tags = soup.find_all('script')
+
+        result = None
+        # Substring to remove
+        prefix = '      window.headerData = '
+
+        for script in script_tags:
+            if 'window.headerData =' in script.text:
+                # Find the line starting with `window.headerData = { "advances"`
+                lines = script.text.split('\n')
+                for line in lines:
+                    if line.strip().startswith('window.headerData = {"indexDataInfo"'):
+                        result = json.loads(line[len(prefix):])
+        result = result['indexDataInfo']
+        top_gainers = result[0]['topGainers']
+        top_losers = result[0]['topLosers']
+
+        return result[0]

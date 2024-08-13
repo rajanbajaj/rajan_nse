@@ -16,7 +16,7 @@ class Session:
         self.session = requests.Session()
         self.base_url = base_url
         self.createNewSession()
-    
+
     def createNewSession(self):
         """This method is used to create a new browser session for the requested url."""
         session = requests.Session()
@@ -24,7 +24,7 @@ class Session:
 
     def makeRequest(self, url, params=None, responseType='json'):
         """This method is used to make a request to the url and set response cookies
-        
+
         Keywork arguments:
         url -- The url to make the request to.
         params -- The parameters to be passed in the url.
@@ -35,11 +35,15 @@ class Session:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies)
             else:
                 r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, params=params)
-            
+
             self.cookies = dict(r.cookies)
 
             if responseType == 'json':
                 return r.json()
+            elif responseType == 'content':
+                return r.content
+            elif responseType == 'text':
+                return r.text
             else:
                 return r
         except Exception as e:
