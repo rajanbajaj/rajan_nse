@@ -143,7 +143,7 @@ class TechnicalIndicators:
         return (abs(data['low'] - data['price']) / data['low']) * 100 <= delta
 
     def trendLine(self, symbol, delta=200, lower_percentile=40, upper_percentile=98, to_date = date.today()):
-         """This method returns the series of price values that creates a trend line both upper and lower.
+        """This method returns the series of price values that creates a trend line both upper and lower.
 
         Keyword arguments:
         symbol -- Stock symbol listed on NSE website
