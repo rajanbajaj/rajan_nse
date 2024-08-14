@@ -2,12 +2,14 @@ from datetime import date, timedelta
 from pandas import DataFrame
 from rajan_nse.Session import Session
 from rajan_nse.helpers import *
+from rajan_nse.NseData import NseData
 
 class Strategies:
     def __init__(self):
         """This class has strategies to filter NSE stocks to build a watchlist."""
         self.session = Session("https://www.nseindia.com")
-        
+        self.nseData = NseData()
+
     def promoterBuyBackStocks(self, delta = 90, to_date = date.today(), save_to_file = False):
         """
         This function will return the list of stocks which are
@@ -23,7 +25,7 @@ class Strategies:
         to_date_formated = to_date.strftime("%d-%m-%Y")
         from_date_formated = from_date.replace(day=to_date.day).strftime("%d-%m-%Y")
         data = filterBasedOnPromoterBuyBackStrategy(self.session, to_date_formated, from_date_formated)
-        
+
         # save data to file
         try:
             if save_to_file:
@@ -33,3 +35,20 @@ class Strategies:
             return
 
         return data
+
+    def oiSpurtsFilteredStocks(self):
+        """
+        This method get all the stocks based on the below filter
+
+        Stocks that appear in daily top gainers or losers that has OI change > 4% by 9:20AM
+        """
+        top_gainers = self.nseData.getTopGainersLosers()['topGainers']['data']
+        oi_spurts = self.nseData.getOISpurtsData()
+
+        result = []
+        for gainer in top_gainers:
+            for oi_spurt in oi_spurts:
+                if gainer['symbol'] == oi_spurt['symbol'] and oi_spurt['avgInOI'] > 4:
+                    result.append(gainer['symbol'])
+
+        return result

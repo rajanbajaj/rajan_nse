@@ -340,7 +340,7 @@ class NseData:
             url = "https://www.nseindia.com/api/live-analysis-oi-spurts-underlyings"
         )
 
-        return data;
+        return data['data'];
 
     def getTopGainersLosers(self):
         """
