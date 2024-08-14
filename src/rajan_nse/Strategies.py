@@ -36,7 +36,7 @@ class Strategies:
 
         return data
 
-    def oiSpurtsFilteredStocks(self):
+    def oiSpurtsFilteredGainerStocks(self):
         """
         This method get all the stocks based on the below filter
 
@@ -47,6 +47,23 @@ class Strategies:
 
         result = []
         for gainer in top_gainers:
+            for oi_spurt in oi_spurts:
+                if gainer['symbol'] == oi_spurt['symbol'] and oi_spurt['avgInOI'] > 4:
+                    result.append(gainer['symbol'])
+
+        return result
+    
+    def oiSpurtsFilteredLoserStocks(self):
+        """
+        This method get all the stocks based on the below filter
+
+        Stocks that appear in daily top gainers or losers that has OI change > 4% by 9:20AM
+        """
+        top_losers = self.nseData.getTopGainersLosers()['topLosers']['data']
+        oi_spurts = self.nseData.getOISpurtsData()
+
+        result = []
+        for gainer in top_losers:
             for oi_spurt in oi_spurts:
                 if gainer['symbol'] == oi_spurt['symbol'] and oi_spurt['avgInOI'] > 4:
                     result.append(gainer['symbol'])
