@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('../src'))  # Adjust to your package's path
 project = 'rajan_nse'
 copyright = '2024, Rajan Bajaj'
 author = 'Rajan Bajaj'
-release = '1.2.4'
+release = '1.2.5'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
