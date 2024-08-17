@@ -1,5 +1,6 @@
 # rajan_nse
 Python package for nse calculations
+Read the documentation [https://rajan-nse.readthedocs.io/](https://rajan-nse.readthedocs.io/)
 
 # requirements
 - alive_progress
