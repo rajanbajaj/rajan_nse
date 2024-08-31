@@ -111,10 +111,15 @@ def getInsiderTradingData(session: Session, to_date_formated, from_date_formated
 def filterStocksBasedOnValueThreshold(session: Session, to_date_formated, from_date_formated, threshold=10000000): 
 
     df = getInsiderTradingData(session, to_date_formated=to_date_formated, from_date_formated=from_date_formated)
-    df = df[['symbol', 'secVal']]
+    df = df[['symbol', 'secVal', 'acqMode']]
+    
     df['symbol'] = df['symbol'].replace(' ', '')
     df['secVal'] = df['secVal'].replace('-', 0)
     df['secVal'] = to_numeric(df['secVal'])
+
+    filter = df['acqMode'] ==  'Market Purchase'
+    df = df.where(filter)
+    df = df.dropna()
 
     df = df.groupby('symbol').sum()
     df.sort_values('secVal', inplace=True)
