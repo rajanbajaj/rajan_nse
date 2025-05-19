@@ -1,10 +1,14 @@
+import brotli
 import requests
 
 class Session:
     headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
                                 'like Gecko) '
                                 'Chrome/80.0.3987.149 Safari/537.36',
-                'accept-language': 'en,gu;q=0.9,hi;q=0.8', 'accept-encoding': 'gzip, deflate, br'}
+                'accept-language': 'en,gu;q=0.9,hi;q=0.8', 
+                # 'accept-encoding': 'gzip, deflate, br, zstd',
+                'Accept': '*/*',  # Add Accept header to gracefully handle any kind of response
+                }
     cookies = {}
 
     def __init__(self, base_url):
@@ -15,12 +19,13 @@ class Session:
         """
         self.session = requests.Session()
         self.base_url = base_url
+        self.session.headers.update(self.headers)
+        self.cookies = {}
         self.createNewSession()
 
     def createNewSession(self):
         """This method is used to create a new browser session for the requested url."""
-        session = requests.Session()
-        request = self.makeRequest(self.base_url)
+        self.makeRequest(self.base_url, responseType='text')
 
     def makeRequest(self, url, params=None, responseType='json'):
         """This method is used to make a request to the url and set response cookies
@@ -32,11 +37,13 @@ class Session:
         """
         try:
             if params == None:
-                r = self.session.get(url=url, headers=self.headers, cookies=self.cookies)
+                r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, allow_redirects=True)
             else:
-                r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, params=params)
+                r = self.session.get(url=url, headers=self.headers, cookies=self.cookies, params=params, allow_redirects=True)
+            self.cookies.update(r.cookies.get_dict())
 
-            self.cookies = dict(r.cookies)
+            print("Content-Encoding:", r.headers.get('Content-Encoding'))
+
 
             if responseType == 'json':
                 return r.json()
@@ -46,6 +53,9 @@ class Session:
                 return r.text
             else:
                 return r
-        except Exception as e:
-            # print(e)
-            return
+        except requests.exceptions.JSONDecodeError:
+            print("Failed to parse JSON response.")
+            return None
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None

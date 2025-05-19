@@ -42,8 +42,9 @@ class Strategies:
 
         Stocks that appear in daily top gainers or losers that has OI change > 4% by 9:20AM
         """
-        top_gainers = self.nseData.getTopGainersLosers()['topGainers']['data']
+        top_gainers = self.nseData.getTopGainersLosers()['topGainers']
         oi_spurts = self.nseData.getOISpurtsData()
+        print(top_gainers)
 
         result = []
         for gainer in top_gainers:

@@ -3,6 +3,7 @@ from rajan_nse.Session import Session
 from bs4 import BeautifulSoup
 import json
 import re
+import time
 
 class NseData:
     def __init__(self) -> None:
@@ -354,30 +355,25 @@ class NseData:
             'topValue': {}
         }
         """
-        data = self.session.makeRequest(
-            url = "https://www.nseindia.com/",
-            responseType = "text"
-        )
-        #print(data)
-        # Parse the HTML content with BeautifulSoup
-        soup = BeautifulSoup(data, 'html.parser')
 
-        # Find the script tag containing the specific text
-        script_tags = soup.find_all('script')
+        base_url = "https://www.nseindia.com/api/live-analysis-variations?index="
+        try:
+            gainers = self.session.makeRequest(base_url + "gainers")
+            losers = self.session.makeRequest(base_url + "loosers")
+        except Exception as e:
+            print("Request failed:", e)
+            return None
 
-        result = None
-        # Substring to remove
-        prefix = '      window.headerData = '
+        time.sleep(5)
+        if not gainers or not losers:
+            print("Failed to fetch gainers or losers data.")
+            return None
 
-        for script in script_tags:
-            if 'window.headerData =' in script.text:
-                # Find the line starting with `window.headerData = { "advances"`
-                lines = script.text.split('\n')
-                for line in lines:
-                    if line.strip().startswith('window.headerData = {"indexDataInfo"'):
-                        result = json.loads(line[len(prefix):])
-        result = result['indexDataInfo']
-        top_gainers = result[0]['topGainers']
-        top_losers = result[0]['topLosers']
+        # The data is under NIFTY key
+        gainers_data = gainers.get("NIFTY", {}).get("data", [])
+        losers_data = losers.get("NIFTY", {}).get("data", [])
 
-        return result[0]
+        return {
+            "topGainers": gainers_data,
+            "topLosers": losers_data
+        }
