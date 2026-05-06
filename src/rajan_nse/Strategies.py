@@ -23,7 +23,7 @@ class Strategies:
         """
         from_date = to_date - timedelta(days=delta)
         to_date_formated = to_date.strftime("%d-%m-%Y")
-        from_date_formated = from_date.replace(day=to_date.day).strftime("%d-%m-%Y")
+        from_date_formated = from_date.strftime("%d-%m-%Y")
         data = filterBasedOnPromoterBuyBackStrategy(self.session, to_date_formated, from_date_formated)
 
         # save data to file

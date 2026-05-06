@@ -114,8 +114,7 @@ def filterStocksBasedOnValueThreshold(session: Session, to_date_formated, from_d
     df = df[['symbol', 'secVal', 'acqMode']]
     
     df['symbol'] = df['symbol'].replace(' ', '')
-    df['secVal'] = df['secVal'].replace('-', 0)
-    df['secVal'] = to_numeric(df['secVal'])
+    df['secVal'] = to_numeric(df['secVal'].replace('-', '0'), errors='coerce').fillna(0)
 
     filter = df['acqMode'] ==  'Market Purchase'
     df = df.where(filter)
@@ -131,7 +130,6 @@ def filterStocksBasedOnValueThreshold(session: Session, to_date_formated, from_d
     df = df.dropna()
 
     filtered_stock_symbols = df['secVal'].keys()
-    df['secVal'].to_csv('stocks_' + to_date_formated + '.tmp.csv')
     return filtered_stock_symbols
 
 def filterStocksBasedOnPromoterAndSast(session: Session, to_date_formated, from_date_formated):
@@ -158,7 +156,7 @@ def filterBasedOnPromoterBuyBackStrategy(session: Session, to_date_formated, fro
             avg_price = findAvgPrice(session, to_date_formated, from_date_formated, symbol)
             last_price = lastPrice(session, symbol)
             diff = (last_price - avg_price) / abs(avg_price)
-            if avg_price != -1 and diff < allowed_diff:
+            if avg_price != -1 and abs(diff) < allowed_diff:
                 final.append([symbol, avg_price, last_price])
             bar()
     return final
